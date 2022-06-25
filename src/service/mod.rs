@@ -58,6 +58,12 @@ pub fn dispatch(cmd: CommandRequest, store: &impl Storage) -> CommandResponse {
         Some(RequestData::Hget(v)) => v.execute(store),
         Some(RequestData::Hgetall(v)) => v.execute(store),
         Some(RequestData::Hset(v)) => v.execute(store),
+        Some(RequestData::Hdel(v)) => v.execute(store),
+        Some(RequestData::Hexist(v)) => v.execute(store),
+        Some(RequestData::Hmget(v)) => v.execute(store),
+        Some(RequestData::Hmset(v)) => v.execute(store),
+        Some(RequestData::Hmexist(v)) => v.execute(store),
+        Some(RequestData::Hmdel(v)) => v.execute(store),
         None => KvError::InvalidCommand("Request has no data".into()).into(),
         _ => KvError::Internal("Not implemented".into()).into(),
     }
@@ -89,8 +95,6 @@ mod tests {
         let res = cloned.execute(CommandRequest::new_hget("t1", "k1"));
         assert_res_ok(res, &["v1".into()], &[]);
     }
-
-
 }
 
 #[cfg(test)]

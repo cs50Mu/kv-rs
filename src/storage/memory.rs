@@ -26,9 +26,10 @@ impl MemTable {
 impl Storage for MemTable {
     fn get(&self, table: &str, key: &str) -> Result<Option<Value>, KvError> {
         let table = self.get_or_create_table(table);
+        // get 返回的是一个Option
         Ok(table.get(key).map(|v| v.value().clone()))
     }
-    
+
     fn set(&self, table: &str, key: String, value: Value) -> Result<Option<Value>, KvError> {
         let table = self.get_or_create_table(table);
         Ok(table.insert(key, value))
@@ -48,7 +49,7 @@ impl Storage for MemTable {
         let table = self.get_or_create_table(table);
         Ok(table
             .iter()
-            .map(|v| Kvpair::new(v.key(), v.value().clone()))
+            .map(|kv| Kvpair::new(kv.key(), kv.value().clone()))
             .collect())
     }
 

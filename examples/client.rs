@@ -17,14 +17,49 @@ async fn main() -> Result<()> {
     let mut client = 
         AsyncProstStream::<_, CommandResponse, CommandRequest, _>::from(stream).for_async();
 
-        // 生成一个 HSET 命令
-        let cmd = CommandRequest::new_hset("table1", "hello", "world".into());
+    // 生成一个 HSET 命令
+    let cmd = CommandRequest::new_hset("table1", "hello", "world".into());
 
-        // 发送 HSET 命令
-        client.send(cmd).await?;
-        if let Some(Ok(data)) = client.next().await {
-            info!("Got response {:?}", data);
-        }
+    // 发送 HSET 命令
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hset response {:?}", data);
+    }
 
-        Ok(())
+    // hget
+    let cmd = CommandRequest::new_hget("table1", "hello");
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hget response {:?}", data);
+    }
+
+    // hmget
+    let cmd = CommandRequest::new_hmget("table1", vec!["hello".into(), "this".into()]);
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hmget response {:?}", data);
+    }
+
+    // hexist
+    let cmd = CommandRequest::new_hexist("table1", "hello");
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hexist response {:?}", data);
+    }
+
+    // hdel
+    let cmd = CommandRequest::new_hdel("table1", "hello");
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hdel response {:?}", data);
+    }
+
+    // hexist should return false now
+    let cmd = CommandRequest::new_hexist("table1", "hello");
+    client.send(cmd).await?;
+    if let Some(Ok(data)) = client.next().await {
+        info!("Got hexist response {:?} for key: `hello`", data);
+    }
+
+    Ok(())
 }

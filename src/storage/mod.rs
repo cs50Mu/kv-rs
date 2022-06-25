@@ -17,6 +17,7 @@ pub trait Storage {
     // 遍历 HashTable, 返回所有 kv pair
     fn get_all(&self, table: &str) -> Result<Vec<Kvpair>, KvError>;
     // 遍历 HashTable, 返回 kv pair 的 Iterator
+    // 目前 Rust 还不支持在 trait 里使用 impl trait 做返回值，所以要这样写
     fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError>;
 }
 
@@ -67,32 +68,32 @@ mod tests {
         assert_eq!(store.del("t2", "hello"), Ok(None));
     }
 
-        fn test_get_all(store: impl Storage) {
-            store.set("t2", "k1".into(), "v1".into()).unwrap();
-            store.set("t2", "k2".into(), "v2".into()).unwrap();
-            let mut data = store.get_all("t2").unwrap();
-            data.sort_by(|a, b| a.partial_cmp(b).unwrap());
-            assert_eq!(
-                data,
-                vec![
-                    Kvpair::new("k1", "v1".into()),
-                    Kvpair::new("k2", "v2".into()),
-                ]
-            )
-        }
+    fn test_get_all(store: impl Storage) {
+        store.set("t2", "k1".into(), "v1".into()).unwrap();
+        store.set("t2", "k2".into(), "v2".into()).unwrap();
+        let mut data = store.get_all("t2").unwrap();
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        assert_eq!(
+            data,
+            vec![
+                Kvpair::new("k1", "v1".into()),
+                Kvpair::new("k2", "v2".into()),
+            ]
+        )
+    }
 
-        #[allow(dead_code)]
-        fn test_get_iter(store: impl Storage) {
-            store.set("t2", "k1".into(), "v1".into()).unwrap();
-            store.set("t2", "k2".into(), "v2".into()).unwrap();
-            let mut data: Vec<_> = store.get_iter("t2").unwrap().collect();
-            data.sort_by(|a, b| a.partial_cmp(b).unwrap());
-            assert_eq!(
-                data,
-                vec![
-                    Kvpair::new("k1", "v1".into()),
-                    Kvpair::new("k2", "v2".into()),
-                ]
-            )
-        }
+    #[allow(dead_code)]
+    fn test_get_iter(store: impl Storage) {
+        store.set("t2", "k1".into(), "v1".into()).unwrap();
+        store.set("t2", "k2".into(), "v2".into()).unwrap();
+        let mut data: Vec<_> = store.get_iter("t2").unwrap().collect();
+        data.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        assert_eq!(
+            data,
+            vec![
+                Kvpair::new("k1", "v1".into()),
+                Kvpair::new("k2", "v2".into()),
+            ]
+        )
+    }
 }
