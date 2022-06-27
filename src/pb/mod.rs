@@ -2,6 +2,8 @@ pub mod abi;
 
 use abi::{command_request::RequestData, *};
 use http::StatusCode;
+use prost::Message;
+use std::convert::TryFrom;
 
 use crate::KvError;
 
@@ -115,6 +117,26 @@ impl From<String> for Value {
     }
 }
 
+impl TryFrom<&[u8]> for Value {
+    type Error = KvError;
+
+    fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
+        let value = Value::decode(data)?;
+        Ok(value)
+    }
+}
+
+impl TryFrom<Value> for Vec<u8> {
+    type Error = KvError;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        // let mut buf = vec![];
+        let mut buf = Vec::with_capacity(value.encoded_len());
+        Value::encode(&value, &mut buf)?;
+        Ok(buf)
+    }
+}
+
 // 从 &str 转换成 Value
 impl From<&str> for Value {
     fn from(s: &str) -> Self {
@@ -153,9 +175,9 @@ impl From<Value> for CommandResponse {
     }
 }
 
-impl From<(String, Value)> for Kvpair{
+impl From<(String, Value)> for Kvpair {
     fn from(v: (String, Value)) -> Self {
-        Self{
+        Self {
             key: v.0,
             value: Some(v.1),
         }

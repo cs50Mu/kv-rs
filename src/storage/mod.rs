@@ -1,6 +1,8 @@
 mod memory;
+mod sleddb;
 
 pub use memory::MemTable;
+pub use sleddb::SledDb;
 
 use crate::{KvError, Kvpair, Value};
 
@@ -23,6 +25,8 @@ pub trait Storage {
 
 #[cfg(test)]
 mod tests {
+    use tempfile::tempdir;
+
     use super::*;
 
     #[test]
@@ -101,5 +105,26 @@ mod tests {
                 Kvpair::new("k2", "v2".into()),
             ]
         )
+    }
+
+    #[test]
+    fn sleddb_basic_interface_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_basic_interface(store);
+    }
+
+    #[test]
+    fn sleddb_get_all_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_get_all(store);
+    }
+
+    #[test]
+    fn sleddb_iter_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_get_iter(store);
     }
 }
