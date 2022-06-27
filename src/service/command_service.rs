@@ -213,7 +213,7 @@ mod tests {
         let res = dispatch(cmd, &store);
         assert_res_ok(res, &[20.into(), Value::default()], &[]);
     }
-    
+
     #[test]
     fn hmdel_should_work() {
         let store = MemTable::new();

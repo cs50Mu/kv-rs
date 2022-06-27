@@ -37,6 +37,12 @@ mod tests {
         test_get_all(store);
     }
 
+    #[test]
+    fn memtable_iter_should_work() {
+        let store = MemTable::new();
+        test_get_iter(store);
+    }
+
     fn test_basic_interface(store: impl Storage) {
         // 第一次 set 会创建 table, 插入 key 并返回 None (之前没值)
         let v = store.set("t1", "hello".into(), "world".into());

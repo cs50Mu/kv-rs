@@ -153,6 +153,15 @@ impl From<Value> for CommandResponse {
     }
 }
 
+impl From<(String, Value)> for Kvpair{
+    fn from(v: (String, Value)) -> Self {
+        Self{
+            key: v.0,
+            value: Some(v.1),
+        }
+    }
+}
+
 // 从 Vec<Kvpair> 转换成 CommandResponse
 impl From<Vec<Kvpair>> for CommandResponse {
     fn from(v: Vec<Kvpair>) -> Self {
