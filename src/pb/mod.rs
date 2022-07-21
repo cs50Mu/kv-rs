@@ -1,6 +1,7 @@
 pub mod abi;
 
 use abi::{command_request::RequestData, *};
+use bytes::Bytes;
 use http::StatusCode;
 use prost::Message;
 use std::convert::TryFrom;
@@ -59,7 +60,7 @@ impl CommandRequest {
         Self {
             request_data: Some(RequestData::Hmexist(Hmexist {
                 table: table.into(),
-                keys: keys,
+                keys,
             })),
         }
     }
@@ -134,6 +135,21 @@ impl TryFrom<Value> for Vec<u8> {
         let mut buf = Vec::with_capacity(value.encoded_len());
         Value::encode(&value, &mut buf)?;
         Ok(buf)
+    }
+}
+
+impl From<Bytes> for Value {
+    fn from(buf: Bytes) -> Self {
+        Self {
+            value: Some(value::Value::Binary(buf)),
+        }
+    }
+}
+
+// &[u8] --> Bytes --> Value
+impl<const N: usize> From<&[u8; N]> for Value {
+    fn from(buf: &[u8; N]) -> Self {
+        Bytes::copy_from_slice(&buf[..]).into()
     }
 }
 

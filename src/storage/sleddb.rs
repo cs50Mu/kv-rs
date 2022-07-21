@@ -1,5 +1,5 @@
 use sled::{Db, IVec};
-use std::{convert::TryInto, path::Path,  str};
+use std::{convert::TryInto, path::Path, str};
 
 use crate::{KvError, Kvpair, Storage, Value};
 
