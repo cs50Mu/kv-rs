@@ -24,6 +24,12 @@ pub enum KvError {
     #[error("Frame is larger than max size")]
     FrameError,
 
+    #[error("Certificate parse error: error to load {0} {1}")]
+    CertificateParseError(&'static str, &'static str),
+
+    #[error("TLS error")]
+    TlsError(#[from] tokio_rustls::rustls::TLSError),
+
     #[error("I/O error")]
     IoError(#[from] std::io::Error),
 
